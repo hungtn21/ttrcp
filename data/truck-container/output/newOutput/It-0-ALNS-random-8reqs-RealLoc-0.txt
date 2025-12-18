@@ -1,0 +1,1 @@
+Starting time = 2025-12-18 16:35:10, total reqs = 8, total truck = 2
