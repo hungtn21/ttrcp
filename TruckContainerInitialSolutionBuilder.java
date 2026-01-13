@@ -1,9 +1,21 @@
+
 import java.util.Stack;
 
+import TruckContainerSolver;
 import vrp.Constants;
 import vrp.entities.Point;
 
-public class TruckContainerInitialSolutionBuilder {
+/**
+ * FPIUS (First Possible Insertion with Unscheduled Set) initialization strategy.
+ * Implements the InitializationStrategy interface.
+ */
+public class TruckContainerInitialSolutionBuilder implements InitializationStrategy {
+	
+	@Override
+	public void initialize(TruckContainerSolver solver) {
+		firstPossibleInitFPIUS(solver);
+	}
+	
 	public void firstPossibleInitFPIUS(TruckContainerSolver solver) {
 		Stack<String> stack = new Stack<String>();
 		for (int r = solver.XR.getNbRoutes(); r >= 1; r--) {

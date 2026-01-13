@@ -27,6 +27,10 @@ public class TruckContainerSolver {
     public ContainerTruckMoocInput input;
 	public DataMapper dataMapper;
 	
+	// Strategy pattern for algorithms
+	private InitializationStrategy initializationStrategy;
+	private OptimizationStrategy optimizationStrategy;
+	
 	ArrayList<Point> points;
 	public ArrayList<Point> pickupPoints;
 	public ArrayList<Point> deliveryPoints;
@@ -152,6 +156,9 @@ public class TruckContainerSolver {
 	
 	public TruckContainerSolver(){
 		dataMapper = new DataMapper();
+		// Set default strategies
+		this.initializationStrategy = new TruckContainerInitialSolutionBuilder();
+		this.optimizationStrategy = new TruckContainerALNSRunner(this);
 	}
 	
 	public void loadData() {
@@ -195,6 +202,37 @@ public class TruckContainerSolver {
 		new TruckContainerModelBuilder().build(this);
 	}
 
+	/**
+	 * Sets the initialization strategy.
+	 * 
+	 * @param strategy The initialization strategy to use
+	 */
+	public void setInitializationStrategy(InitializationStrategy strategy) {
+		this.initializationStrategy = strategy;
+	}
+	
+	/**
+	 * Sets the optimization strategy.
+	 * 
+	 * @param strategy The optimization strategy to use
+	 */
+	public void setOptimizationStrategy(OptimizationStrategy strategy) {
+		this.optimizationStrategy = strategy;
+	}
+	
+	/**
+	 * Initializes the solution using the configured initialization strategy.
+	 * Default strategy is FPIUS (set in constructor).
+	 */
+	public void initializeSolution() {
+		initializationStrategy.initialize(this);
+	}
+	
+	/**
+	 * @deprecated Use initializeSolution() with strategy pattern instead.
+	 * This method is kept for backward compatibility.
+	 */
+	@Deprecated
 	public void firstPossibleInitFPIUS(){
 		new TruckContainerInitialSolutionBuilder().firstPossibleInitFPIUS(this);
 	}
@@ -223,6 +261,21 @@ public class TruckContainerSolver {
 		return new TruckContainerALNSRunner(this).getNbRejectedRequests();
 	}
 	
+	/**
+	 * Optimizes the solution using the configured optimization strategy.
+	 * Default strategy is ALNS (set in constructor).
+	 * 
+	 * @param outputfile Path to the output file for logging results
+	 */
+	public void optimizeSolution(String outputfile) {
+		optimizationStrategy.optimize(this, outputfile);
+	}
+	
+	/**
+	 * @deprecated Use optimizeSolution() with strategy pattern instead.
+	 * This method is kept for backward compatibility.
+	 */
+	@Deprecated
 	public void adaptiveSearchOperators(String outputfile){	
 		new TruckContainerALNSRunner(this).adaptiveSearchOperators(outputfile);
 	}
@@ -390,8 +443,9 @@ public class TruckContainerSolver {
 
 					writeStartInfo(outputALNSfileTxt);
 
-					solver.firstPossibleInitFPIUS();
-
+					solver.setInitializationStrategy(new TruckContainerInitialSolutionBuilder());
+					solver.initializeSolution();
+					
 					solver.timeLimit = 3600000;
 					solver.nIter = 100;
 					
@@ -414,7 +468,9 @@ public class TruckContainerSolver {
 					solver.cooling_rate = 0.9995;
 					solver.nTabu = 5;
 
-					solver.adaptiveSearchOperators(outputALNSfileTxt);
+					solver.setOptimizationStrategy(new TruckContainerALNSRunner(solver));
+					solver.optimizeSolution(outputALNSfileTxt);
+					
 					solver.printSolution(outputALNSfileTxt);
 
 					Gson g = new Gson();

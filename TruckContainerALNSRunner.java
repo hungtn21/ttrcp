@@ -7,13 +7,23 @@ import java.util.Set;
 import models.output.TruckContainerSolution;
 import vrp.entities.Point;
 
-public class TruckContainerALNSRunner {
+/**
+ * ALNS (Adaptive Large Neighborhood Search) optimization strategy.
+ * Implements the OptimizationStrategy interface.
+ */
+public class TruckContainerALNSRunner implements OptimizationStrategy {
 	private final TruckContainerSolver solver;
 	private final TruckContainerInitialSolutionBuilder initialSolutionBuilder;
 
 	public TruckContainerALNSRunner(TruckContainerSolver solver) {
 		this.solver = solver;
 		this.initialSolutionBuilder = new TruckContainerInitialSolutionBuilder();
+	}
+	
+	@Override
+	public void optimize(TruckContainerSolver solver, String outputFile) {
+		// Use this.solver field which was set in constructor
+		adaptiveSearchOperators(outputFile);
 	}
 
 	public void initParamsForALNS() {
