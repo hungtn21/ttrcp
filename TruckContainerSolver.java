@@ -2,14 +2,9 @@ import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
-import java.util.Stack;
 
 import com.google.gson.Gson;
 
@@ -17,7 +12,6 @@ import constraints.*;
 import models.equipments.*;
 import models.input.ContainerTruckMoocInput;
 import models.output.StatisticInformation;
-import models.output.TruckContainerSolution;
 import models.output.TruckMoocContainerOutputJson;
 import models.places.*;
 import models.requests.*;
@@ -26,7 +20,6 @@ import models.routing.TruckRoute;
 import vrp.*;
 import vrp.constraints.CEarliestArrivalTimeVR;
 import vrp.entities.*;
-import vrp.functions.TotalCostVR;
 import vrp.invariants.EarliestArrivalTimeVR;
 import vrp.utils.DateTimeUtils;
 
@@ -197,171 +190,10 @@ public class TruckContainerSolver {
 	public void init(){
 		new TruckContainerInitializer().init(this);
 	}
-	// Test if initialization is correct
-	// /**
-	//  * Runtime sanity checks to verify that {@link #init()} finished successfully.
-	//  * Throws a descriptive exception on the first detected inconsistency.
-	//  */
-	// public void sanityCheckInit() {
-	// 	if (input == null) {
-	// 		throw new IllegalStateException("sanityCheckInit: input is null (did you call loadData()?)");
-	// 	}
-	// 	if (mLocationCode2Index == null || travelTime == null) {
-	// 		throw new IllegalStateException("sanityCheckInit: travel-time matrix not loaded (did you call loadData()?)");
-	// 	}
-	// 	if (points == null || points.isEmpty()) {
-	// 		throw new IllegalStateException("sanityCheckInit: points is null/empty after init()");
-	// 	}
-	// 	if (pickupPoints == null || deliveryPoints == null || pickup2Delivery == null || delivery2Pickup == null) {
-	// 		throw new IllegalStateException("sanityCheckInit: pickup/delivery collections not initialized");
-	// 	}
-	// 	if (pickupPoints.size() != deliveryPoints.size()) {
-	// 		throw new IllegalStateException("sanityCheckInit: pickupPoints.size != deliveryPoints.size ("
-	// 				+ pickupPoints.size() + " vs " + deliveryPoints.size() + ")");
-	// 	}
-	// 	if (point2Type == null || point2Group == null || earliestAllowedArrivalTime == null || serviceDuration == null
-	// 			|| lastestAllowedArrivalTime == null || point2moocWeight == null || point2containerWeight == null) {
-	// 		throw new IllegalStateException("sanityCheckInit: core point maps not initialized");
-	// 	}
-	// 	if (awm == null || nwMooc == null || nwContainer == null) {
-	// 		throw new IllegalStateException("sanityCheckInit: weight managers not initialized");
-	// 	}
-
-	// 	for (Point p : points) {
-	// 		if (p == null) {
-	// 			throw new IllegalStateException("sanityCheckInit: null point in points list");
-	// 		}
-	// 		String lc = p.getLocationCode();
-	// 		if (lc == null) {
-	// 			throw new IllegalStateException("sanityCheckInit: point " + p.ID + " has null locationCode");
-	// 		}
-	// 		if (!mLocationCode2Index.containsKey(lc)) {
-	// 			throw new IllegalStateException(
-	// 					"sanityCheckInit: locationCode '" + lc + "' not found in mLocationCode2Index (point " + p.ID + ")");
-	// 		}
-	// 		if (!point2Type.containsKey(p)) {
-	// 			throw new IllegalStateException("sanityCheckInit: missing point2Type for point " + p.ID);
-	// 		}
-	// 		if (!point2Group.containsKey(p)) {
-	// 			throw new IllegalStateException("sanityCheckInit: missing point2Group for point " + p.ID);
-	// 		}
-	// 		if (!earliestAllowedArrivalTime.containsKey(p) || !serviceDuration.containsKey(p)
-	// 				|| !lastestAllowedArrivalTime.containsKey(p)) {
-	// 			throw new IllegalStateException("sanityCheckInit: missing time-window data for point " + p.ID);
-	// 		}
-	// 		if (!point2moocWeight.containsKey(p) || !point2containerWeight.containsKey(p)) {
-	// 			throw new IllegalStateException("sanityCheckInit: missing weight data for point " + p.ID);
-	// 		}
-	// 	}
-
-	// 	// Verify pickup-delivery bijection on the constructed pickup/delivery sets
-	// 	for (Point pu : pickupPoints) {
-	// 		Point del = pickup2Delivery.get(pu);
-	// 		if (del == null) {
-	// 			throw new IllegalStateException("sanityCheckInit: pickup has no mapped delivery, pickup point " + pu.ID);
-	// 		}
-	// 		Point back = delivery2Pickup.get(del);
-	// 		if (back != pu) {
-	// 			throw new IllegalStateException("sanityCheckInit: delivery2Pickup mismatch for pickup " + pu.ID
-	// 					+ " (delivery " + del.ID + ")");
-	// 		}
-	// 	}
-
-	// 	if (MAX_TRAVELTIME <= 0) {
-	// 		throw new IllegalStateException("sanityCheckInit: MAX_TRAVELTIME not computed (" + MAX_TRAVELTIME + ")");
-	// 	}
-	// }
 
 	public void stateModel(){
 		new TruckContainerModelBuilder().build(this);
 	}
-
-	// Test if VRP model construction is correct
-	/**
-	 * Runtime sanity checks to verify that {@link #stateModel()} finished successfully.
-	 * Throws a descriptive exception on the first detected inconsistency.
-	 */
-	// public void sanityCheckStateModel() {
-	// 	if (mgr == null || XR == null || S == null) {
-	// 		throw new IllegalStateException("sanityCheckStateModel: mgr/XR/S is null (did you call stateModel()?)");
-	// 	}
-	// 	if (mgr.getVarRoutesVR() != XR) {
-	// 		throw new IllegalStateException("sanityCheckStateModel: VRManager does not reference XR");
-	// 	}
-	// 	if (S.getVRManager() != mgr) {
-	// 		throw new IllegalStateException("sanityCheckStateModel: ConstraintSystemVR does not reference mgr");
-	// 	}
-	// 	if (startPoints == null || stopPoints == null) {
-	// 		throw new IllegalStateException("sanityCheckStateModel: startPoints/stopPoints not initialized (did init() run?)");
-	// 	}
-	// 	if (XR.getNbRoutes() != startPoints.size()) {
-	// 		throw new IllegalStateException(
-	// 				"sanityCheckStateModel: XR route count mismatch (XR=" + XR.getNbRoutes() + ", expected="
-	// 						+ startPoints.size() + ")");
-	// 	}
-
-	// 	// Ensure all required points were registered into XR
-	// 	for (int i = 0; i < startPoints.size(); i++) {
-	// 		Point sp = startPoints.get(i);
-	// 		Point tp = stopPoints.get(i);
-	// 		if (XR.getIndex(sp) == Constants.NULL_POINT) {
-	// 			throw new IllegalStateException("sanityCheckStateModel: startPoint not registered in XR (id=" + sp.ID + ")");
-	// 		}
-	// 		if (XR.getIndex(tp) == Constants.NULL_POINT) {
-	// 			throw new IllegalStateException("sanityCheckStateModel: stopPoint not registered in XR (id=" + tp.ID + ")");
-	// 		}
-	// 	}
-	// 	for (int i = 0; i < pickupPoints.size(); i++) {
-	// 		Point pu = pickupPoints.get(i);
-	// 		Point de = deliveryPoints.get(i);
-	// 		if (XR.getIndex(pu) == Constants.NULL_POINT) {
-	// 			throw new IllegalStateException(
-	// 					"sanityCheckStateModel: pickup point not registered in XR (id=" + pu.ID + ")");
-	// 		}
-	// 		if (XR.getIndex(de) == Constants.NULL_POINT) {
-	// 			throw new IllegalStateException(
-	// 					"sanityCheckStateModel: delivery point not registered in XR (id=" + de.ID + ")");
-	// 		}
-	// 	}
-	// 	for (int i = 0; i < startMoocPoints.size(); i++) {
-	// 		Point sm = startMoocPoints.get(i);
-	// 		Point em = stopMoocPoints.get(i);
-	// 		if (XR.getIndex(sm) == Constants.NULL_POINT) {
-	// 			throw new IllegalStateException(
-	// 					"sanityCheckStateModel: startMoocPoint not registered in XR (id=" + sm.ID + ")");
-	// 		}
-	// 		if (XR.getIndex(em) == Constants.NULL_POINT) {
-	// 			throw new IllegalStateException(
-	// 					"sanityCheckStateModel: stopMoocPoint not registered in XR (id=" + em.ID + ")");
-	// 		}
-	// 	}
-
-	// 	if (eat == null || cEarliest == null) {
-	// 		throw new IllegalStateException("sanityCheckStateModel: time-window invariants/constraints not initialized");
-	// 	}
-	// 	if (accMoocInvr == null || accContainerInvr == null) {
-	// 		throw new IllegalStateException("sanityCheckStateModel: accumulators not initialized");
-	// 	}
-	// 	if (capContCtr == null || capMoocCtr == null || contmoocCtr == null) {
-	// 		throw new IllegalStateException("sanityCheckStateModel: capacity/trailer constraints not initialized");
-	// 	}
-	// 	if (objective == null) {
-	// 		throw new IllegalStateException("sanityCheckStateModel: objective is null");
-	// 	}
-	// 	if (valueSolution == null || valueSolution.size() < 2) {
-	// 		throw new IllegalStateException("sanityCheckStateModel: valueSolution not initialized (size="
-	// 				+ (valueSolution == null ? "null" : valueSolution.size()) + ")");
-	// 	}
-	// 	double obj = objective.getValue();
-	// 	if (Double.isNaN(obj) || Double.isInfinite(obj)) {
-	// 		throw new IllegalStateException("sanityCheckStateModel: objective value is invalid: " + obj);
-	// 	}
-	// 	// Constraints may be violated at this stage; we only check it is well-defined.
-	// 	int vio = S.violations();
-	// 	if (vio < 0) {
-	// 		throw new IllegalStateException("sanityCheckStateModel: violations is negative: " + vio);
-	// 	}
-	// }
 
 	public void firstPossibleInitFPIUS(){
 		new TruckContainerInitialSolutionBuilder().firstPossibleInitFPIUS(this);
@@ -378,128 +210,6 @@ public class TruckContainerSolver {
 			System.out.println(e);
 		}
 	}
-
-	// // Test if writeStartInfo wrote a valid header line
-	// public static void sanityCheckWriteStartInfo(String outputFileTxt) {
-	// 	Path p = Path.of(outputFileTxt);
-	// 	if (!Files.exists(p)) {
-	// 		throw new IllegalStateException("sanityCheckWriteStartInfo: output file not found: " + outputFileTxt);
-	// 	}
-	// 	try {
-	// 		String line = Files.readAllLines(p, StandardCharsets.UTF_8).stream().findFirst().orElse("");
-	// 		if (line == null || line.trim().isEmpty()) {
-	// 			throw new IllegalStateException(
-	// 					"sanityCheckWriteStartInfo: first line is empty in output file: " + outputFileTxt);
-	// 		}
-	// 		if (!line.startsWith("Starting time = ")) {
-	// 			throw new IllegalStateException(
-	// 					"sanityCheckWriteStartInfo: unexpected header format, got: '" + line + "'");
-	// 		}
-	// 		if (!line.contains(", total reqs = ") || !line.contains(", total truck = ")) {
-	// 			throw new IllegalStateException(
-	// 					"sanityCheckWriteStartInfo: missing counters in header, got: '" + line + "'");
-	// 		}
-	// 	} catch (Exception e) {
-	// 		throw new IllegalStateException("sanityCheckWriteStartInfo: cannot read/validate file: " + outputFileTxt, e);
-	// 	}
-	// }
-
-	// // Test if firstPossibleInitFPIUS built an initial solution consistently
-	// public void sanityCheckFirstPossibleInitFPIUS() {
-	// 	if (XR == null || mgr == null || S == null) {
-	// 		throw new IllegalStateException(
-	// 				"sanityCheckFirstPossibleInitFPIUS: XR/mgr/S is null (did you call stateModel()?)");
-	// 	}
-	// 	if (pickupPoints == null || deliveryPoints == null || pickup2Delivery == null) {
-	// 		throw new IllegalStateException("sanityCheckFirstPossibleInitFPIUS: pickup/delivery not initialized");
-	// 	}
-	// 	if (rejectPickupPoints == null || rejectDeliveryPoints == null) {
-	// 		throw new IllegalStateException("sanityCheckFirstPossibleInitFPIUS: reject lists not initialized");
-	// 	}
-	// 	if (rejectPickupPoints.size() != rejectDeliveryPoints.size()) {
-	// 		throw new IllegalStateException(
-	// 				"sanityCheckFirstPossibleInitFPIUS: rejectPickupPoints.size != rejectDeliveryPoints.size ("
-	// 						+ rejectPickupPoints.size() + " vs " + rejectDeliveryPoints.size() + ")");
-	// 	}
-
-	// 	// Each request is either routed (pickup+delivery on some route) or rejected
-	// 	for (int i = 0; i < pickupPoints.size(); i++) {
-	// 		Point pu = pickupPoints.get(i);
-	// 		Point de = deliveryPoints.get(i);
-	// 		int rPu = XR.route(pu);
-	// 		int rDe = XR.route(de);
-
-	// 		if (rPu != Constants.NULL_POINT || rDe != Constants.NULL_POINT) {
-	// 			if (rPu == Constants.NULL_POINT || rDe == Constants.NULL_POINT) {
-	// 				throw new IllegalStateException("sanityCheckFirstPossibleInitFPIUS: pickup/delivery route mismatch ("
-	// 						+ pu.ID + "->" + de.ID + ")");
-	// 			}
-	// 			if (rPu != rDe) {
-	// 				throw new IllegalStateException("sanityCheckFirstPossibleInitFPIUS: pickup/delivery on different routes ("
-	// 						+ pu.ID + " in " + rPu + ", " + de.ID + " in " + rDe + ")");
-	// 			}
-	// 			if (rejectPickupPoints.contains(pu) || rejectDeliveryPoints.contains(de)) {
-	// 				throw new IllegalStateException(
-	// 						"sanityCheckFirstPossibleInitFPIUS: routed request appears in reject lists ("
-	// 								+ pu.ID + "->" + de.ID + ")");
-	// 			}
-	// 		} else {
-	// 			// If unrouted, should be rejected (as in the end of firstPossibleInitFPIUS)
-	// 			if (!rejectPickupPoints.contains(pu)) {
-	// 				throw new IllegalStateException(
-	// 						"sanityCheckFirstPossibleInitFPIUS: unrouted pickup not present in reject list ("
-	// 								+ pu.ID + ")");
-	// 			}
-	// 			Point mappedDelivery = pickup2Delivery.get(pu);
-	// 			if (mappedDelivery != null && !rejectDeliveryPoints.contains(mappedDelivery)) {
-	// 				throw new IllegalStateException(
-	// 						"sanityCheckFirstPossibleInitFPIUS: rejectDeliveryPoints missing mapped delivery (pickup " + pu.ID
-	// 								+ ", delivery " + mappedDelivery.ID + ")");
-	// 			}
-	// 		}
-	// 	}
-
-	// 	// Mooc points should be inserted in pairs (start and its corresponding stop)
-	// 	if (startMoocPoints != null && stopMoocPoints != null && start2stopMoocPoint != null) {
-	// 		for (int i = 0; i < startMoocPoints.size(); i++) {
-	// 			Point st = startMoocPoints.get(i);
-	// 			Point tp = start2stopMoocPoint.get(st);
-	// 			if (tp == null)
-	// 				continue;
-	// 			boolean stInRoute = XR.route(st) != Constants.NULL_POINT;
-	// 			boolean tpInRoute = XR.route(tp) != Constants.NULL_POINT;
-	// 			if (stInRoute != tpInRoute) {
-	// 				throw new IllegalStateException(
-	// 						"sanityCheckFirstPossibleInitFPIUS: mooc start/stop not paired in routes (start " + st.ID
-	// 								+ " inRoute=" + stInRoute + ", stop " + tp.ID + " inRoute=" + tpInRoute + ")");
-	// 			}
-	// 		}
-	// 	}
-	// }
-
-	// public void printInitialSolutionSummary(String label, int maxRoutesToPrint) {
-	// 	if (XR == null) {
-	// 		System.out.println("printInitialSolutionSummary: XR is null (did you call stateModel()?)");
-	// 		return;
-	// 	}
-	// 	int totalRoutes = XR.getNbRoutes();
-	// 	int routesToPrint = Math.max(0, Math.min(maxRoutesToPrint, totalRoutes));
-	// 	int rejected = (rejectPickupPoints == null) ? -1 : rejectPickupPoints.size();
-	// 	int violations = (S == null) ? -1 : S.violations();
-	// 	double obj = (objective == null) ? Double.NaN : objective.getValue();
-	// 	System.out.println("=== Initial solution: " + label + " ===");
-	// 	System.out.println(
-	// 			"routes=" + totalRoutes + ", clients=" + XR.getNbClients() + ", rejected=" + rejected + ", violations="
-	// 					+ violations + ", objective=" + obj);
-	// 	for (int r = 1; r <= routesToPrint; r++) {
-	// 		Point tp = XR.getTerminatingPointOfRoute(r);
-	// 		int sz = (tp == null) ? -1 : (XR.index(tp) == Constants.NULL_POINT ? -1 : Math.max(0, XR.index(tp) - 1));
-	// 		System.out.println("route[" + r + "] size=" + sz + " :: " + XR.routeString(r));
-	// 	}
-	// 	if (routesToPrint < totalRoutes) {
-	// 		System.out.println("... (" + (totalRoutes - routesToPrint) + " more routes not printed)");
-	// 	}
-	// }
 
 	public void initParamsForALNS(){
 		new TruckContainerALNSRunner(this).initParamsForALNS();
@@ -527,9 +237,6 @@ public class TruckContainerSolver {
 			Point x = XR.getStartingPointOfRoute(k);
 			for(; x != XR.getTerminatingPointOfRoute(k); x = XR.next(x)){
 				s = s + x.getLocationCode() + " (" + point2Type.get(x) + ") -> ";
-//				System.out.println("p1 = " + x.getLocationCode()
-//						+ ", p2 = " + XR.next(x).getLocationCode() 
-//						+ ", cost = " + awm.getDistance(x, XR.next(x)));
 			}
 			x = XR.getTerminatingPointOfRoute(k);
 			s = s + x.getLocationCode()  + " (" + point2Type.get(x) + ")" + "\n";
@@ -677,42 +384,13 @@ public class TruckContainerSolver {
 					solver.dataMapper.readData(dataFileName);
 					solver.loadData();
 					
-					// Test if data loaded successfully
-					// if (solver.input != null) {
-					// 	System.out.println("Data loaded successfully!");
-					// 	System.out.println("Number of trucks: " + solver.input.getTrucks().length);
-					// 	System.out.println("Number of containers: " + solver.input.getContainers().length);
-					// 	System.out.println("Number of locations: " + solver.locationCodes.length);
-					// } else {
-					// 	System.out.println("Failed to load data!");
-					// }
-
 					solver.init();
 					
-					// Test if initialization completed successfully
-					// solver.sanityCheckInit();
-					// System.out.println("init OK: " + fileName + " | points=" + solver.points.size()
-					// 		+ ", pickups=" + solver.pickupPoints.size() + ", MAX_TRAVELTIME=" + MAX_TRAVELTIME);
-                
 					solver.stateModel();
-
-					// Test if VRP model constructed successfully
-					// solver.sanityCheckStateModel();
-					// System.out.println("stateModel OK: " + fileName + " | routes=" + solver.XR.getNbRoutes()
-					// 		+ ", clients=" + solver.XR.getNbClients() + ", violations=" + solver.S.violations()
-					// 		+ ", objective=" + solver.objective.getValue());
 
 					writeStartInfo(outputALNSfileTxt);
 
-					// Test if writeStartInfo wrote a valid header line
-					// sanityCheckWriteStartInfo(outputALNSfileTxt);
-
 					solver.firstPossibleInitFPIUS();
-
-					// Test if initial solution built successfully
-					// solver.sanityCheckFirstPossibleInitFPIUS();
-					// System.out.println("firstPossibleInitFPIUS OK: " + fileName);
-					// solver.printInitialSolutionSummary(fileName, 5);
 
 					solver.timeLimit = 3600000;
 					solver.nIter = 100;
