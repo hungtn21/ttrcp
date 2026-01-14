@@ -2,6 +2,7 @@ package solver;
 
 import java.util.*;
 
+import solver.init.FPIUSInit;
 import vrp.Constants;
 import vrp.entities.Point;
 

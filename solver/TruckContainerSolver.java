@@ -19,7 +19,9 @@ import models.places.*;
 import models.requests.*;
 import models.routing.RouteElement;
 import models.routing.TruckRoute;
+import solver.init.FPIUSInit;
 import solver.init.InitializationStrategy;
+import solver.opt.ALNS;
 import solver.opt.OptimizationStrategy;
 import vrp.*;
 import vrp.constraints.CEarliestArrivalTimeVR;
@@ -42,8 +44,8 @@ public class TruckContainerSolver {
 	public ArrayList<Point> rejectDeliveryPoints;
 	ArrayList<Point> startPoints;
 	ArrayList<Point> stopPoints;
-	ArrayList<Point> startMoocPoints;
-	ArrayList<Point> stopMoocPoints;
+	public ArrayList<Point> startMoocPoints;
+	public ArrayList<Point> stopMoocPoints;
 	HashMap<Point, String> point2Type;
 	
 	public HashMap<Point, Integer> earliestAllowedArrivalTime;
@@ -98,11 +100,11 @@ public class TruckContainerSolver {
 	public ImportEmptyRequests[] imEmptyRequests;
 	public ImportLadenRequests[] imLadenRequests;
 	
-	ArcWeightsManager awm;
-	VRManager mgr;
-	VarRoutesVR XR;
-	ConstraintSystemVR S;
-	IFunctionVR objective;
+	public ArcWeightsManager awm;
+	public VRManager mgr;
+	public VarRoutesVR XR;
+	public ConstraintSystemVR S;
+	public IFunctionVR objective;
 	CEarliestArrivalTimeVR ceat;
 	LexMultiValues valueSolution;
 	EarliestArrivalTimeVR eat;
@@ -113,15 +115,15 @@ public class TruckContainerSolver {
 	
 	NodeWeightsManager nwMooc;
 	NodeWeightsManager nwContainer;
-	AccumulatedWeightNodesVR accMoocInvr;
+	public AccumulatedWeightNodesVR accMoocInvr;
 	AccumulatedWeightNodesVR accContainerInvr;
-	HashMap<Point, IFunctionVR> accDisF;
+	public HashMap<Point, IFunctionVR> accDisF;
 	
-	HashMap<Point, Integer> nChosed;
-	HashMap<Point, Boolean> removeAllowed;
+	public HashMap<Point, Integer> nChosed;
+	public HashMap<Point, Boolean> removeAllowed;
 	
-	int nRemovalOperators = 8;
-	int nInsertionOperators = 8;
+	public int nRemovalOperators = 8;
+	public int nInsertionOperators = 8;
 	
 	//parameters
 	public int lower_removal;
@@ -137,9 +139,9 @@ public class TruckContainerSolver {
 	public double temperature = 200;
 	public double cooling_rate = 0.9995;
 	public int nTabu = 5;
-	int timeLimit = 36000000;
-	int nIter = 30000;
-	int maxStable = 1000;
+	public int timeLimit = 36000000;
+	public int nIter = 30000;
+	public int maxStable = 1000;
 	
 	int INF_TIME = Integer.MAX_VALUE;
 	public static double MAX_TRAVELTIME;
@@ -165,25 +167,16 @@ public class TruckContainerSolver {
 		this.optimizationStrategy = new ALNS(this);
 	}
 	
-	public void loadData() {
-		if (dataMapper.getInput() != null) {
-			this.input = dataMapper.getInput();
-			this.locationCodes = dataMapper.locationCodes;
-			this.mLocationCode2Index = dataMapper.mLocationCode2Index;
-			this.distance = dataMapper.distance;
-			this.travelTime = dataMapper.travelTime;
-			this.mCode2Truck = dataMapper.mCode2Truck;
-			this.mCode2Mooc = dataMapper.mCode2Mooc;
-			this.mCode2Container = dataMapper.mCode2Container;
-			this.mCode2DepotContainer = dataMapper.mCode2DepotContainer;
-			this.mCode2DepotTruck = dataMapper.mCode2DepotTruck;
-			this.mCode2DepotMooc = dataMapper.mCode2DepotMooc;
-			this.mCode2Warehouse = dataMapper.mCode2Warehouse;
-			this.mCode2Port = dataMapper.mCode2Port;
-			this.additionalContainers = dataMapper.additionalContainers;
-		}
+	/**
+	 * Reads data from file and automatically populates all solver properties.
+	 * This is a convenience method that eliminates the need for separate loadData() call.
+	 * 
+	 * @param fileName Path to the input JSON file
+	 */
+	public void readData(String fileName) {
+		dataMapper.readData(fileName, this);
 	}
-
+	
 	public int getTravelTime(String src, String dest) {
 		if (mLocationCode2Index.get(src) == null
 				|| mLocationCode2Index.get(dest) == null) {
@@ -231,15 +224,6 @@ public class TruckContainerSolver {
 	public void initializeSolution() {
 		initializationStrategy.initialize(this);
 	}
-	
-	/**
-	 * @deprecated Use initializeSolution() with strategy pattern instead.
-	 * This method is kept for backward compatibility.
-	 */
-	@Deprecated
-	public void firstPossibleInitFPIUS(){
-		new FPIUSInit().firstPossibleInitFPIUS(this);
-	}
 
 	private static void writeStartInfo(String outputFileTxt) {
 		try {
@@ -251,10 +235,6 @@ public class TruckContainerSolver {
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-	}
-
-	public void initParamsForALNS(){
-		new ALNS(this).initParamsForALNS();
 	}
 
 	public int getNbUsedTrucks(){
@@ -273,15 +253,6 @@ public class TruckContainerSolver {
 	 */
 	public void optimizeSolution(String outputfile) {
 		optimizationStrategy.optimize(this, outputfile);
-	}
-	
-	/**
-	 * @deprecated Use optimizeSolution() with strategy pattern instead.
-	 * This method is kept for backward compatibility.
-	 */
-	@Deprecated
-	public void adaptiveSearchOperators(String outputfile){	
-		new ALNS(this).adaptiveSearchOperators(outputfile);
 	}
 	
 	public void printSolution(String outputfile){
@@ -425,7 +396,7 @@ public class TruckContainerSolver {
 	
 	
     public static void main(String[] args){
-		int[] nbReq = new int[]{20};
+		int[] nbReq = new int[]{8};
 		for(int k = 0; k < 1; k++){
 			for(int i = 0; i < 1; i++){
 				for(int j = 0; j < nbReq.length; j++){
@@ -438,11 +409,8 @@ public class TruckContainerSolver {
 					String outputALNSfileJson = dir + "output/newOutput/It-" + k +"-ALNS-" + fileName + ".json";
 					
 					TruckContainerSolver solver = new TruckContainerSolver();
-					solver.dataMapper.readData(dataFileName);
-					solver.loadData();
-					
+					solver.readData(dataFileName);
 					solver.init();
-					
 					solver.stateModel();
 
 					writeStartInfo(outputALNSfileTxt);

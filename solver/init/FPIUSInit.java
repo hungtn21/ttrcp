@@ -1,8 +1,8 @@
-package solver;
+package solver.init;
 
 import java.util.Stack;
 
-import solver.init.InitializationStrategy;
+import solver.TruckContainerSolver;
 import vrp.Constants;
 import vrp.entities.Point;
 
@@ -93,7 +93,7 @@ public class FPIUSInit implements InitializationStrategy {
 		return bestMooc;
 	}
 
-	void insertMoocToRoutes(TruckContainerSolver solver, int r) {
+	public void insertMoocToRoutes(TruckContainerSolver solver, int r) {
 		Point st = solver.XR.getStartingPointOfRoute(r);
 		Point stMooc = null;
 		Point enMooc = null;
@@ -113,7 +113,7 @@ public class FPIUSInit implements InitializationStrategy {
 		}
 	}
 
-	void removeMoocOnRoutes(TruckContainerSolver solver, int r) {
+	public void removeMoocOnRoutes(TruckContainerSolver solver, int r) {
 		Point x = solver.XR.getStartingPointOfRoute(r);
 		Point next_x = solver.XR.next(x);
 		while (next_x != solver.XR.getTerminatingPointOfRoute(r)) {
@@ -150,7 +150,7 @@ public class FPIUSInit implements InitializationStrategy {
 		return bestMooc;
 	}
 
-	void removeAllMoocFromRoutes(TruckContainerSolver solver) {
+	public void removeAllMoocFromRoutes(TruckContainerSolver solver) {
 		for (int i = 0; i < solver.startMoocPoints.size(); i++) {
 			Point st = solver.startMoocPoints.get(i);
 			Point tp = solver.start2stopMoocPoint.get(st);
@@ -167,7 +167,7 @@ public class FPIUSInit implements InitializationStrategy {
 		}
 	}
 
-	void insertMoocForAllRoutes(TruckContainerSolver solver) {
+	public void insertMoocForAllRoutes(TruckContainerSolver solver) {
 		removeAllMoocFromRoutes(solver);
 		for (int r = 1; r <= solver.XR.getNbRoutes(); r++) {
 			Point st = solver.XR.getStartingPointOfRoute(r);

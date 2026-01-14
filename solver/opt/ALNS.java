@@ -1,4 +1,4 @@
-package solver;
+package solver.opt;
 
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
@@ -7,7 +7,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import models.output.TruckContainerSolution;
-import solver.opt.OptimizationStrategy;
+import solver.SearchOptimumSolution;
+import solver.TruckContainerSolver;
+import solver.init.FPIUSInit;
 import vrp.entities.Point;
 
 /**
