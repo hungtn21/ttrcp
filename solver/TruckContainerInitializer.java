@@ -1,3 +1,5 @@
+package solver;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -18,12 +20,6 @@ import vrp.entities.NodeWeightsManager;
 import vrp.entities.Point;
 import vrp.utils.DateTimeUtils;
 
-/**
- * Extracted initializer for {@link TruckContainerSolver#init()}.
- *
- * Kept in the default package to access solver's package-private fields without
- * changing the rest of the codebase.
- */
 public class TruckContainerInitializer {
 
 	public void init(TruckContainerSolver solver) {

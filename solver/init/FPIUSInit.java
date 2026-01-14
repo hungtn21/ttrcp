@@ -1,7 +1,8 @@
+package solver.init;
 
 import java.util.Stack;
 
-import TruckContainerSolver;
+import solver.TruckContainerSolver;
 import vrp.Constants;
 import vrp.entities.Point;
 
@@ -9,7 +10,7 @@ import vrp.entities.Point;
  * FPIUS (First Possible Insertion with Unscheduled Set) initialization strategy.
  * Implements the InitializationStrategy interface.
  */
-public class TruckContainerInitialSolutionBuilder implements InitializationStrategy {
+public class FPIUSInit implements InitializationStrategy {
 	
 	@Override
 	public void initialize(TruckContainerSolver solver) {
@@ -92,7 +93,7 @@ public class TruckContainerInitialSolutionBuilder implements InitializationStrat
 		return bestMooc;
 	}
 
-	void insertMoocToRoutes(TruckContainerSolver solver, int r) {
+	public void insertMoocToRoutes(TruckContainerSolver solver, int r) {
 		Point st = solver.XR.getStartingPointOfRoute(r);
 		Point stMooc = null;
 		Point enMooc = null;
@@ -112,7 +113,7 @@ public class TruckContainerInitialSolutionBuilder implements InitializationStrat
 		}
 	}
 
-	void removeMoocOnRoutes(TruckContainerSolver solver, int r) {
+	public void removeMoocOnRoutes(TruckContainerSolver solver, int r) {
 		Point x = solver.XR.getStartingPointOfRoute(r);
 		Point next_x = solver.XR.next(x);
 		while (next_x != solver.XR.getTerminatingPointOfRoute(r)) {
@@ -149,7 +150,7 @@ public class TruckContainerInitialSolutionBuilder implements InitializationStrat
 		return bestMooc;
 	}
 
-	void removeAllMoocFromRoutes(TruckContainerSolver solver) {
+	public void removeAllMoocFromRoutes(TruckContainerSolver solver) {
 		for (int i = 0; i < solver.startMoocPoints.size(); i++) {
 			Point st = solver.startMoocPoints.get(i);
 			Point tp = solver.start2stopMoocPoint.get(st);
@@ -166,7 +167,7 @@ public class TruckContainerInitialSolutionBuilder implements InitializationStrat
 		}
 	}
 
-	void insertMoocForAllRoutes(TruckContainerSolver solver) {
+	public void insertMoocForAllRoutes(TruckContainerSolver solver) {
 		removeAllMoocFromRoutes(solver);
 		for (int r = 1; r <= solver.XR.getNbRoutes(); r++) {
 			Point st = solver.XR.getStartingPointOfRoute(r);

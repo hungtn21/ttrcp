@@ -1,16 +1,19 @@
+package solver;
+
 import java.util.*;
 
+import solver.init.FPIUSInit;
 import vrp.Constants;
 import vrp.entities.Point;
 
 public class SearchOptimumSolution {
 	TruckContainerSolver tcs;
-	private final TruckContainerInitialSolutionBuilder initialSolutionBuilder;
+	private final FPIUSInit initialSolutionBuilder;
 	
 	public SearchOptimumSolution(TruckContainerSolver tcs){
 		super();
 		this.tcs = tcs;
-		this.initialSolutionBuilder = new TruckContainerInitialSolutionBuilder();
+		this.initialSolutionBuilder = new FPIUSInit();
 	}
 	
 	public void allRemoval(){

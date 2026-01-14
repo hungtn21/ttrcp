@@ -1,3 +1,5 @@
+package solver;
+
 import models.equipments.Truck;
 import models.input.ContainerTruckMoocInput;
 import vrp.utils.DateTimeUtils;

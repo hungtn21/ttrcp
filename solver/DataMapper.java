@@ -1,3 +1,5 @@
+package solver;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -37,11 +39,14 @@ public class DataMapper {
     }
     
     /**
-     * Reads and parses input data from JSON file
+     * Reads and parses input data from JSON file and populates solver fields.
+     * This method directly fills all solver properties, eliminating the need for loadData().
+     * 
      * @param fileName Path to the input JSON file
+     * @param solver The TruckContainerSolver to populate with data
      * @return The parsed ContainerTruckMoocInput object
      */
-    public ContainerTruckMoocInput readData(String fileName) {
+    public ContainerTruckMoocInput readData(String fileName, TruckContainerSolver solver) {
         try {
             Gson g = new Gson();
             BufferedReader in = new BufferedReader(new FileReader(fileName));
@@ -53,6 +58,22 @@ public class DataMapper {
             
             mapData(fileName);
             
+            // Directly populate solver fields
+            solver.input = input;
+            solver.locationCodes = this.locationCodes;
+            solver.mLocationCode2Index = this.mLocationCode2Index;
+            solver.distance = this.distance;
+            solver.travelTime = this.travelTime;
+            solver.mCode2Truck = this.mCode2Truck;
+            solver.mCode2Mooc = this.mCode2Mooc;
+            solver.mCode2Container = this.mCode2Container;
+            solver.mCode2DepotContainer = this.mCode2DepotContainer;
+            solver.mCode2DepotTruck = this.mCode2DepotTruck;
+            solver.mCode2DepotMooc = this.mCode2DepotMooc;
+            solver.mCode2Warehouse = this.mCode2Warehouse;
+            solver.mCode2Port = this.mCode2Port;
+            solver.additionalContainers = this.additionalContainers;
+            
             return input;
         } catch (Exception e) {
             System.out.println("Error reading data: " + e);
@@ -60,10 +81,6 @@ public class DataMapper {
         }
     }
     
-    /**
-     * Maps and processes all data structures from input
-     * @param dataFileName The data file name (for reference)
-     */
     private void mapData(String dataFileName) {
         processContainers();
         processLocationCodes();
