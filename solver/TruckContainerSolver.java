@@ -1,3 +1,5 @@
+package solver;
+
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -17,6 +19,8 @@ import models.places.*;
 import models.requests.*;
 import models.routing.RouteElement;
 import models.routing.TruckRoute;
+import solver.init.InitializationStrategy;
+import solver.opt.OptimizationStrategy;
 import vrp.*;
 import vrp.constraints.CEarliestArrivalTimeVR;
 import vrp.entities.*;
@@ -157,8 +161,8 @@ public class TruckContainerSolver {
 	public TruckContainerSolver(){
 		dataMapper = new DataMapper();
 		// Set default strategies
-		this.initializationStrategy = new TruckContainerInitialSolutionBuilder();
-		this.optimizationStrategy = new TruckContainerALNSRunner(this);
+		this.initializationStrategy = new FPIUSInit();
+		this.optimizationStrategy = new ALNS(this);
 	}
 	
 	public void loadData() {
@@ -234,7 +238,7 @@ public class TruckContainerSolver {
 	 */
 	@Deprecated
 	public void firstPossibleInitFPIUS(){
-		new TruckContainerInitialSolutionBuilder().firstPossibleInitFPIUS(this);
+		new FPIUSInit().firstPossibleInitFPIUS(this);
 	}
 
 	private static void writeStartInfo(String outputFileTxt) {
@@ -250,15 +254,15 @@ public class TruckContainerSolver {
 	}
 
 	public void initParamsForALNS(){
-		new TruckContainerALNSRunner(this).initParamsForALNS();
+		new ALNS(this).initParamsForALNS();
 	}
 
 	public int getNbUsedTrucks(){
-		return new TruckContainerALNSRunner(this).getNbUsedTrucks();
+		return new ALNS(this).getNbUsedTrucks();
 	}
 	
 	public int getNbRejectedRequests(){
-		return new TruckContainerALNSRunner(this).getNbRejectedRequests();
+		return new ALNS(this).getNbRejectedRequests();
 	}
 	
 	/**
@@ -277,7 +281,7 @@ public class TruckContainerSolver {
 	 */
 	@Deprecated
 	public void adaptiveSearchOperators(String outputfile){	
-		new TruckContainerALNSRunner(this).adaptiveSearchOperators(outputfile);
+		new ALNS(this).adaptiveSearchOperators(outputfile);
 	}
 	
 	public void printSolution(String outputfile){
@@ -443,7 +447,7 @@ public class TruckContainerSolver {
 
 					writeStartInfo(outputALNSfileTxt);
 
-					solver.setInitializationStrategy(new TruckContainerInitialSolutionBuilder());
+					solver.setInitializationStrategy(new FPIUSInit());
 					solver.initializeSolution();
 					
 					solver.timeLimit = 3600000;
@@ -468,7 +472,7 @@ public class TruckContainerSolver {
 					solver.cooling_rate = 0.9995;
 					solver.nTabu = 5;
 
-					solver.setOptimizationStrategy(new TruckContainerALNSRunner(solver));
+					solver.setOptimizationStrategy(new ALNS(solver));
 					solver.optimizeSolution(outputALNSfileTxt);
 					
 					solver.printSolution(outputALNSfileTxt);

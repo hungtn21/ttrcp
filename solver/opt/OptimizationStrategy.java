@@ -1,3 +1,7 @@
+package solver.opt;
+
+import solver.TruckContainerSolver;
+
 /**
  * Strategy interface for optimization algorithms.
  * 

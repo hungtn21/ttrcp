@@ -1,3 +1,5 @@
+package solver;
+
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -5,19 +7,20 @@ import java.util.HashSet;
 import java.util.Set;
 
 import models.output.TruckContainerSolution;
+import solver.opt.OptimizationStrategy;
 import vrp.entities.Point;
 
 /**
  * ALNS (Adaptive Large Neighborhood Search) optimization strategy.
  * Implements the OptimizationStrategy interface.
  */
-public class TruckContainerALNSRunner implements OptimizationStrategy {
+public class ALNS implements OptimizationStrategy {
 	private final TruckContainerSolver solver;
-	private final TruckContainerInitialSolutionBuilder initialSolutionBuilder;
+	private final FPIUSInit initialSolutionBuilder;
 
-	public TruckContainerALNSRunner(TruckContainerSolver solver) {
+	public ALNS(TruckContainerSolver solver) {
 		this.solver = solver;
-		this.initialSolutionBuilder = new TruckContainerInitialSolutionBuilder();
+		this.initialSolutionBuilder = new FPIUSInit();
 	}
 	
 	@Override

@@ -1,3 +1,7 @@
+package solver.init;
+
+import solver.TruckContainerSolver;
+
 /**
  * Strategy interface for initialization algorithms.
  * 

@@ -1,3 +1,5 @@
+package solver;
+
 import constraints.ContainerCapacityConstraint;
 import constraints.ContainerCarriedByTrailerConstraint;
 import constraints.MoocCapacityConstraint;
