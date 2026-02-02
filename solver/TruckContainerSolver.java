@@ -46,7 +46,7 @@ public class TruckContainerSolver {
 	ArrayList<Point> stopPoints;
 	public ArrayList<Point> startMoocPoints;
 	public ArrayList<Point> stopMoocPoints;
-	HashMap<Point, String> point2Type;
+	public HashMap<Point, String> point2Type;
 	
 	public HashMap<Point, Integer> earliestAllowedArrivalTime;
 	public HashMap<Point, Integer> serviceDuration;
@@ -107,7 +107,7 @@ public class TruckContainerSolver {
 	public IFunctionVR objective;
 	CEarliestArrivalTimeVR ceat;
 	LexMultiValues valueSolution;
-	EarliestArrivalTimeVR eat;
+	public EarliestArrivalTimeVR eat;
 	CEarliestArrivalTimeVR cEarliest;
 	ContainerCapacityConstraint capContCtr;
 	MoocCapacityConstraint capMoocCtr;
@@ -396,7 +396,7 @@ public class TruckContainerSolver {
 	
 	
     public static void main(String[] args){
-		int[] nbReq = new int[]{8};
+		int[] nbReq = new int[]{200};
 		for(int k = 0; k < 1; k++){
 			for(int i = 0; i < 1; i++){
 				for(int j = 0; j < nbReq.length; j++){

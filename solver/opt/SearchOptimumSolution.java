@@ -1,7 +1,8 @@
-package solver;
+package solver.opt;
 
 import java.util.*;
 
+import solver.TruckContainerSolver;
 import solver.init.FPIUSInit;
 import vrp.Constants;
 import vrp.entities.Point;

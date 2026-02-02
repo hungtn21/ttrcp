@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import models.output.TruckContainerSolution;
-import solver.SearchOptimumSolution;
 import solver.TruckContainerSolver;
 import solver.init.FPIUSInit;
 import vrp.entities.Point;
