@@ -323,7 +323,7 @@ public class SearchOptimumSolution {
 			tcs.removeAllowed.put(pj, true);
 		}
 	}
-	
+
 	public void greedyInsertion(){
 		System.out.println("greedyInsertion");
 		int c = 0;

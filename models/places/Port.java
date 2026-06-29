@@ -1,8 +1,8 @@
 package models.places;
 
 public class Port {
-	private String code;
-	private String locationCode;
+	private String code; // Mã cảng
+	private String locationCode; // Mã địa điểm của cảng, được sử dụng để liên kết với các điểm trong route
 	public String getCode() {
 		return code;
 	}

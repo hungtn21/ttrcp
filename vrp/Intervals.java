@@ -1,5 +1,5 @@
 package vrp;
-
+//Khoảng thời gian giữa 2 thời điểm, được sử dụng để lưu trữ khoảng thời gian giữa 2 điểm trong route
 public class Intervals {
 	private String dateStart;
 	private String dateEnd;

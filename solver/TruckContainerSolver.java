@@ -19,7 +19,9 @@ import models.places.*;
 import models.requests.*;
 import models.routing.RouteElement;
 import models.routing.TruckRoute;
+import solver.init.CheapestInsertionInit;
 import solver.init.FPIUSInit;
+import solver.init.HybridInit;
 import solver.init.InitializationStrategy;
 import solver.opt.ALNS;
 import solver.opt.OptimizationStrategy;
@@ -229,7 +231,8 @@ public class TruckContainerSolver {
 		try {
 			FileOutputStream write = new FileOutputStream(outputFileTxt);
 			PrintWriter fo = new PrintWriter(write);
-			fo.println("Starting time = " + DateTimeUtils.unixTimeStamp2DateTime(System.currentTimeMillis() / 1000)
+		long startMs = System.currentTimeMillis();
+		fo.println("Starting time = " + DateTimeUtils.unixTimeStamp2DateTime(startMs / 1000) + " (ms=" + startMs + ")"
 					+ ", total reqs = " + nRequest + ", total truck = " + nVehicle);
 			fo.close();
 		} catch (Exception e) {
@@ -282,7 +285,7 @@ public class TruckContainerSolver {
 			FileOutputStream write = new FileOutputStream(outputfile, true);
 			PrintWriter fo = new PrintWriter(write);
 			fo.println(s);
-			fo.println("end time = " + DateTimeUtils.unixTimeStamp2DateTime(t/1000)
+fo.println("end time = " + DateTimeUtils.unixTimeStamp2DateTime(t/1000)
 					+ ", #RejectedReqs = " + nbR
 					+ ", nb Trucks = " + nB
 					+ ", cost = " + objective.getValue());
@@ -394,9 +397,8 @@ public class TruckContainerSolver {
 				ee, el, ie, il, statisticInformation);
 	}
 	
-	
     public static void main(String[] args){
-		int[] nbReq = new int[]{200};
+		int[] nbReq = new int[]{20};
 		for(int k = 0; k < 1; k++){
 			for(int i = 0; i < 1; i++){
 				for(int j = 0; j < nbReq.length; j++){
@@ -405,8 +407,8 @@ public class TruckContainerSolver {
 					String fileName = "random-" + nbReq[j] + "reqs-RealLoc-" + i;
 					String dataFileName = dir + "input/" + fileName + ".txt";
 					
-					String outputALNSfileTxt = dir + "output/newOutput/It-" + k +"-ALNS-" + fileName + ".txt";
-					String outputALNSfileJson = dir + "output/newOutput/It-" + k +"-ALNS-" + fileName + ".json";
+					String outputALNSfileTxt = dir + "output/newOutput/It-" + k +"-ALNS-10000itsFPIUS" + fileName + ".txt";
+					String outputALNSfileJson = dir + "output/newOutput/It-" + k +"-ALNS-10000itsFPIUS" + fileName + ".json";
 					
 					TruckContainerSolver solver = new TruckContainerSolver();
 					solver.readData(dataFileName);
@@ -419,7 +421,7 @@ public class TruckContainerSolver {
 					solver.initializeSolution();
 					
 					solver.timeLimit = 3600000;
-					solver.nIter = 100;
+					solver.nIter = 10000;
 					
 					solver.nRemovalOperators = 8;
 					solver.nInsertionOperators = 8;

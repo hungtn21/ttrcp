@@ -62,7 +62,7 @@ public class Point {
     public void setY(double y) {
         this.y = y;
     }
-
+// Tính góc giữa 2 điểm
     double degrees(Point p) {
         double X = p.x - x;
         double Y = p.y - y;
@@ -76,7 +76,7 @@ public class Point {
         this.y = y;
         //this.bucketIDs = new ArrayList<Integer>();
     }
-
+// Tính khoảng cách giữa 2 điểm
     public double distance(Point p) {
         return Math.sqrt((p.x - x) * (p.x - x) + (p.y - y) * (p.y - y));
     }

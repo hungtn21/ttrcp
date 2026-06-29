@@ -113,7 +113,7 @@ public class ALNS implements OptimizationStrategy {
 			fo.println("time limit = " + solver.timeLimit + ", nbIters = " + solver.nIter + ", maxStable = " + solver.maxStable);
 			fo.println("#Request = " + TruckContainerSolver.nRequest);
 			fo.println("iter=====insertion=====removal=====time=====cost=====nbReject=====nbTrucks");
-			fo.println("0 -1 -1 " + " " + System.currentTimeMillis() / 1000 + " " + best_cost + " "
+			fo.println("0 -1 -1 " + " " + System.currentTimeMillis() + " " + best_cost + " "
 					+ getNbRejectedRequests() + " " + getNbUsedTrucks());
 			fo.close();
 		} catch (Exception e) {
@@ -201,11 +201,14 @@ public class ALNS implements OptimizationStrategy {
 			int current_nb_reject_points = current_solution.get_rejectPickupPoints().size();
 
 			if (new_nb_reject_points < current_nb_reject_points
-					|| (new_nb_reject_points == current_nb_reject_points && new_cost < current_cost)) {
+					|| (new_nb_reject_points == current_nb_reject_points && new_nbTrucks < current_nbTrucks)
+					|| (new_nb_reject_points == current_nb_reject_points && new_nbTrucks == current_nbTrucks && new_cost < current_cost)) {
 				int best_nb_reject_points = best_solution.get_rejectPickupPoints().size();
+				int best_nbTrucks = best_solution.get_nbTrucks();
 
 				if (new_nb_reject_points < best_nb_reject_points
-						|| (new_nb_reject_points == best_nb_reject_points && new_cost < best_cost)) {
+						|| (new_nb_reject_points == best_nb_reject_points && new_nbTrucks < best_nbTrucks)
+						|| (new_nb_reject_points == best_nb_reject_points && new_nbTrucks == best_nbTrucks && new_cost < best_cost)) {
 
 					best_cost = new_cost;
 					best_solution = new TruckContainerSolution(solver.XR, solver.rejectPickupPoints, solver.rejectDeliveryPoints,
@@ -214,7 +217,7 @@ public class ALNS implements OptimizationStrategy {
 						FileOutputStream write = new FileOutputStream(outputfile, true);
 						PrintWriter fo = new PrintWriter(write);
 						fo.println(it + " " + i_selected_insertion + " " + i_selected_removal + " "
-								+ System.currentTimeMillis() / 1000 + " " + best_cost + " " + getNbRejectedRequests()
+							+ System.currentTimeMillis() + " " + best_cost + " " + getNbRejectedRequests()
 								+ " " + getNbUsedTrucks());
 						fo.close();
 					} catch (Exception e) {
@@ -271,7 +274,7 @@ public class ALNS implements OptimizationStrategy {
 		try {
 			FileOutputStream write = new FileOutputStream(outputfile, true);
 			PrintWriter fo = new PrintWriter(write);
-			fo.println(it + " -1 -1 " + System.currentTimeMillis() / 1000 + " " + best_cost + " "
+			fo.println(it + " -1 -1 " + System.currentTimeMillis() + " " + best_cost + " "
 					+ getNbRejectedRequests() + " " + getNbUsedTrucks());
 			fo.close();
 		} catch (Exception e) {
